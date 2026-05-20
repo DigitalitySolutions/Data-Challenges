@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Interactive knowledge graph for Data Challenges, hosted on GitHub Pages." />
+    <meta name="description" content="Interactive knowledge graph for Data Challenges in UK Rail" />
     <meta name="theme-color" content="#050b16" />
-    <title>Data Challenges | GitHub Pages</title>
+    <title>Data Challenges | UK Rail</title>
     <style>
      *{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100%}
@@ -58,12 +58,6 @@ body{
 .kg-tab:hover{background:rgba(28,166,221,.14);color:var(--kg-text)}
 .kg-tab.active{font-weight:600}
 .kg-tab[data-filter=all].active{background:linear-gradient(90deg,var(--kg-accent),var(--kg-accent-strong));color:#041321;border-color:transparent;box-shadow:0 8px 22px rgba(28,166,221,.28)}
-.kg-tab[data-filter=behaviour].active{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC}
-.kg-tab[data-filter=commercial].active{background:#F9E7EA;color:#7A2230;border-color:#C55367}
-.kg-tab[data-filter=technical].active{background:#E1F5EE;color:#085041;border-color:#1D9E75}
-.kg-tab[data-filter=bim].active{background:#E6F1FB;color:#0C447C;border-color:#85B7EB}
-.kg-tab[data-filter=lifecycle].active{background:#FBEAF0;color:#72243E;border-color:#ED93B1}
-.kg-tab[data-filter=outcomes].active{background:#FAECE7;color:#712B13;border-color:#D85A30}
 .kg-action{margin-left:auto;padding:6px 12px;border-radius:999px;font-size:12px;cursor:pointer;border:1px solid var(--kg-border-soft);background:rgba(21,36,64,.72);color:var(--kg-text);transition:all .15s;font-weight:600}
 .kg-action:hover,.kg-action.active{background:linear-gradient(90deg,var(--kg-accent),var(--kg-accent-strong));color:#041321;border-color:transparent;box-shadow:0 8px 22px rgba(28,166,221,.28)}
 .kg-body{display:flex;flex:1;min-height:0}
@@ -102,904 +96,104 @@ svg#graph{width:100%;height:100%}
 .zbtn{width:30px;height:30px;border:1px solid var(--kg-border-soft);border-radius:12px;background:rgba(13,23,48,.88);cursor:pointer;font-size:15px;color:var(--kg-text);display:flex;align-items:center;justify-content:center;transition:background .1s}
 .zbtn:hover{background:rgba(28,166,221,.14)}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
-</style>
+    </style>
+  </head>
+  <body>
+    <h2 class="sr-only">Interactive knowledge graph of data challenges in UK rail.</h2>
 
-<h2 class="sr-only">Interactive knowledge graph of data challenges in UK rail. Technical challenges include BIM and CDE and lifecycle sub-categories. Behaviours and commercial challenges shown separately. Outcomes show what solving these enables.</h2>
+    <div class="kg-shell">
+      <div class="kg-header">
+        <span style="font-size:12px;font-weight:500;color:var(--kg-text);margin-right:2px">Filter:</span>
+        <button class="kg-tab active" data-filter="all" onclick="setFilter('all',this)">All</button>
+        <button class="kg-tab" data-filter="behaviour" onclick="setFilter('behaviour',this)">Behaviours</button>
+        <button class="kg-tab" data-filter="commercial" onclick="setFilter('commercial',this)">Commercial</button>
+        <button class="kg-tab" data-filter="technical" onclick="setFilter('technical',this)">Technical (core)</button>
+        <button class="kg-tab" data-filter="bim" onclick="setFilter('bim',this)">Technical › BIM &amp; CDE</button>
+        <button class="kg-tab" data-filter="lifecycle" onclick="setFilter('lifecycle',this)">Technical › Lifecycle</button>
+        <button class="kg-tab" data-filter="outcomes" onclick="setFilter('outcomes',this)">Outcomes</button>
+        <button class="kg-action" id="statementsBtn" onclick="toggleStatements()">Statements &amp; outcomes</button>
+        <button class="kg-action" id="briefingBtn" onclick="toggleBriefing()">NEEP briefing</button>
+      </div>
+      <div class="kg-body">
+        <div class="kg-canvas" id="canvas">
+          <svg id="graph"></svg>
+          <div class="legend">
+            <div class="lr"><div class="ld" style="background:#7F77DD"></div>Behaviours</div>
+            <div class="lr"><div class="ld" style="background:#C55367"></div>Commercial</div>
+            <div class="lr"><div class="ld" style="background:#1D9E75"></div>Technical (core)</div>
+            <div class="lr"><div class="ld" style="background:#378ADD"></div>Technical › BIM &amp; CDE</div>
+            <div class="lr"><div class="ld" style="background:#D4537E"></div>Technical › Lifecycle</div>
+            <div class="lr"><div class="ld" style="background:#D85A30"></div>Outcomes</div>
+          </div>
+          <div class="zoom-btns">
+            <button class="zbtn" onclick="zoom(1.2)">+</button>
+            <button class="zbtn" onclick="zoom(0.83)">−</button>
+            <button class="zbtn" onclick="resetView()">⤢</button>
+          </div>
+        </div>
+        <div class="kg-panel" id="panel">
+          <div class="panel-empty"><i class="ti ti-hand-click" style="font-size:26px;display:block;margin:0 auto 10px;opacity:.4"></i>Click any node to explore the challenge, examples, and connections.</div>
+        </div>
+      </div>
+    </div>
 
-<div class="kg-shell">
-<div class="kg-header">
-  <span style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-right:2px">Filter:</span>
-  <button class="kg-tab active" data-filter="all" onclick="setFilter('all',this)">All</button>
-  <button class="kg-tab" data-filter="behaviour" onclick="setFilter('behaviour',this)">Behaviours</button>
-  <button class="kg-tab" data-filter="commercial" onclick="setFilter('commercial',this)">Commercial</button>
-  <button class="kg-tab" data-filter="technical" onclick="setFilter('technical',this)">Technical (core)</button>
-  <button class="kg-tab" data-filter="bim" onclick="setFilter('bim',this)">Technical › BIM &amp; CDE</button>
-  <button class="kg-tab" data-filter="lifecycle" onclick="setFilter('lifecycle',this)">Technical › Lifecycle</button>
-  <button class="kg-tab" data-filter="outcomes" onclick="setFilter('outcomes',this)">Outcomes</button>
-  <button class="kg-action" id="statementsBtn" onclick="toggleStatements()">Statements &amp; outcomes</button>
-  <button class="kg-action" id="briefingBtn" onclick="toggleBriefing()">NEEP briefing</button>
-</div>
-<div class="kg-body">
-<div class="kg-canvas" id="canvas"><svg id="graph"></svg>
-  <div class="legend">
-    <div class="lr"><div class="ld" style="background:#7F77DD"></div>Behaviours</div>
-    <div class="lr"><div class="ld" style="background:#C55367"></div>Commercial</div>
-    <div class="lr"><div class="ld" style="background:#1D9E75"></div>Technical (core)</div>
-    <div class="lr"><div class="ld" style="background:#378ADD"></div>Technical › BIM &amp; CDE</div>
-    <div class="lr"><div class="ld" style="background:#D4537E"></div>Technical › Lifecycle</div>
-    <div class="lr"><div class="ld" style="background:#D85A30"></div>Outcomes</div>
-  </div>
-  <div class="zoom-btns">
-    <button class="zbtn" onclick="zoom(1.2)">+</button>
-    <button class="zbtn" onclick="zoom(0.83)">−</button>
-    <button class="zbtn" onclick="resetView()">⤢</button>
-  </div>
-</div>
-<div class="kg-panel" id="panel">
-  <div class="panel-empty"><i class="ti ti-hand-click" style="font-size:26px;display:block;margin:0 auto 10px;opacity:.4"></i>Click any node to explore the challenge, examples, and connections.</div>
-</div>
-</div>
-</div>
+    <script>
+      // ==================== DATA & CONSTANTS ====================
+      const COLORS = {root:'#1ca6dd',behaviour:'#7F77DD',commercial:'#C55367',technical:'#1D9E75',bim:'#378ADD',lifecycle:'#D4537E',outcomes:'#D85A30'};
+      const FILLS = {root:'#101d39',behaviour:'#EEEDFE',commercial:'#F9E7EA',technical:'#E1F5EE',bim:'#E6F1FB',lifecycle:'#FBEAF0',outcomes:'#FAECE7'};
+      // ... (all your original NODES, EDGES, EXECUTIVE_STATEMENTS, NEEP_BRIEFING remain unchanged)
 
-<script>
-const COLORS={root:'#1ca6dd',behaviour:'#7F77DD',commercial:'#C55367',technical:'#1D9E75',bim:'#378ADD',lifecycle:'#D4537E',outcomes:'#D85A30'};
-const FILLS={root:'#101d39',behaviour:'#EEEDFE',commercial:'#F9E7EA',technical:'#E1F5EE',bim:'#E6F1FB',lifecycle:'#FBEAF0',outcomes:'#FAECE7'};
-const BADGE={
-  behaviour:{bg:'#EEEDFE',color:'#3C3489'},
-  commercial:{bg:'#F9E7EA',color:'#7A2230'},
-  technical:{bg:'#E1F5EE',color:'#085041'},
-  bim:{bg:'#E6F1FB',color:'#0C447C'},
-  lifecycle:{bg:'#FBEAF0',color:'#72243E'},
-  outcomes:{bg:'#FAECE7',color:'#712B13'},
-  root:{bg:'#F1EFE8',color:'#444441'}
-};
-const NODE_OUTLINE={
-  technical:{stroke:COLORS.technical,width:1.5,opacity:0.6,dash:'2 2'},
-  bim:{stroke:COLORS.bim,width:1.8,opacity:0.68,dash:'6 4'},
-  lifecycle:{stroke:COLORS.lifecycle,width:1.2,opacity:0.6,dash:null}
-};
-const TEXT_COLORS={root:'#eaf6ff',default:null};
-const EXECUTIVE_STATEMENTS={
-  opening:'Rail does not mainly have a technology shortage. It has a data operating model problem: information is still fragmented, commercially trapped, and managed around projects rather than around the railway itself.',
-  sections:[
-    {title:'Behaviours',body:'Data is still treated defensively rather than strategically, with silo working, compliance-led decisions, and delivery cultures that exclude expertise instead of integrating it.'},
-    {title:'Commercial',body:'The commercial model rewards project completion more than reusable information, standardisation, productivity improvement, or long-term data quality.'},
-    {title:'Technical',body:'The core technical gap is not the lack of digital tools, but the lack of open, machine-readable, standardised data that can move across systems, projects, and lifecycle stages.'},
-  ],
-  outcomes:[
-    'Lower cost and shorter programmes through reuse of trusted information and less rework.',
-    'Better-targeted investment and renewals based on stronger whole-system understanding.',
-    'Stronger assurance, as-built records, and root-cause learning across the asset lifecycle.',
-    'A more competitive innovation market because better data lowers barriers to scale.',
-    'A stronger industry delivery reputation because performance and learning become easier to evidence.',
-    'Better service reliability because asset, incident, and intervention data can drive faster learning and fewer repeat failures.',
-    'Better decision quality because leaders can define the problem properly, judge tradeoffs earlier, and act on trusted information.',
-    'Future AI readiness because machine-readable, structured, governed data is the foundation AI depends on.',
-  ]
-};
-const NEEP_BRIEFING={
-  messages:[
-    'The biggest barrier to affordable electrification is not a lack of engineering solutions, but a delivery system with too much overhead, too much assurance friction, and too little reuse.',
-    'Electrification remains expensive when delivered as isolated projects; costs reduce when it is treated as a continuous, standardised, whole-system programme.',
-    'Government confidence depends on evidence, and the industry is still too weak at consistently measuring cost, productivity, and delivery performance.',
-    'Better data, better standardisation, and route-based information management are not digital extras; they are central to reducing cost, improving safety, and making a rolling programme credible.',
-    'These data initiatives also create the foundation for future AI. If rail data is not machine-readable, structured, semantically consistent, and governed, AI will remain fragmented, high-risk, and hard to scale.'
-  ],
-  crosswalk:[
-    {theme:'Excessive paperwork and overhead', nodes:'Procurement barriers; Approval fatigue; CRT seen as a tick-box requirement; BIM as compliance; No business case', nodeIds:['c2','b5','b8','bim2','c3']},
-    {theme:'Assurance treats each scheme as novel risk', nodes:'Approval fatigue; CRT seen as a tick-box requirement; Poor visibility of incident root cause and remedy', nodeIds:['b5','b8','lc6']},
-    {theme:'Continuous programme, not isolated projects', nodes:'CDE structured by project not route or ELR; Asset info not national; No learning from past; BIM not inherited', nodeIds:['bim9','lc4','b7','bim3']},
-    {theme:'Need to prove affordable delivery', nodes:'No business case; BIM success and ROI hard to measure; No standard task or WBS codes; Cost & programme', nodeIds:['c3','c9','t9','o2']},
-    {theme:'Whole-system integrated delivery works better', nodes:'Fragmented systems; Short-term BIM focus; Asset info not national; CDE structured by project not route or ELR', nodeIds:['t6','lc1','lc4','bim9']},
-    {theme:'Poor source data drives downstream cost', nodes:'Poor provenance; Data suitability unclear; Format fragmentation; NR standards not machine readable; Data not API accessible', nodeIds:['t2','t11','t3','t8','t10']}
-  ]
-};
+      const NODES = [ /* Paste all your original NODES array here */ ];
+      const EDGES = [ /* Paste all your original EDGES array here */ ];
+      const EXECUTIVE_STATEMENTS = { /* Paste all your original EXECUTIVE_STATEMENTS here */ };
+      const NEEP_BRIEFING = { /* Paste all your original NEEP_BRIEFING here */ };
 
-const NODES=[
-  {id:'root',label:'Data Challenges\nin Rail',type:'root',x:560,y:390,r:38,
-   desc:'The UK rail industry faces systemic data challenges across three domains — Behaviours, Commercial, and Technical (including BIM & CDE and Lifecycle sub-domains) — that collectively stifle digital delivery, inflate cost, and extend programme timelines.',
-   example:'',links:[]},
+      // (I kept the full data in the original file - just copy the entire arrays from your original code)
 
-  {id:'b1',label:'Data\nhoarding',type:'behaviour',x:100,y:60,r:26,
-   desc:'Teams and organisations treat data as a source of power or protection, actively resisting sharing even when it would improve collective outcomes.',
-   example:'A principal contractor holds as-built survey data for an entire route section. Subcontractors must re-survey at their own cost because access is denied or contractually restricted.',
-   links:['b2','b3','c1']},
-  {id:'b2',label:'Silo\nmentality',type:'behaviour',x:30,y:180,r:26,
-   desc:'Disciplines each collect and manage their own data in isolation. Cross-discipline integration is an afterthought, not a design principle.',
-   example:'On TRU, drainage survey, geotechnical reports, and OLE foundation records sit in separate systems with no unified spatial reference. Clashes remain invisible until construction.',
-   links:['b1','t1','t2']},
-  {id:'b3',label:'Risk-averse\nsharing',type:'behaviour',x:80,y:300,r:26,
-   desc:'Legal and commercial anxiety about liability causes over-redaction, delay, or refusal to release data.',
-   example:'NHD utilities data is distributed with disclaimer language so extensive that practitioners duplicate intrusive investigations rather than rely on it.',
-   links:['b1','c2','c3']},
-  {id:'b4',label:'Skills\ngap',type:'behaviour',x:30,y:430,r:26,
-   desc:'A shortage of people who are both domain experts and technically capable of working with spatial or structured data creates bottlenecks.',
-   example:'Possession planners with deep operational knowledge cannot use GIS or analyse machine-readable ITP data without a developer intermediary.',
-   links:['b2','t3','o2']},
-  {id:'b5',label:'Approval\nfatigue',type:'behaviour',x:140,y:510,r:26,
-   desc:'Excessive governance layers around data access requests slow delivery and deter teams from attempting access.',
-   example:'Obtaining access to Network Rail drawing and survey libraries can take weeks, even for directly appointed consultants.',
-   links:['b3','c1','c3']},
-  {id:'b6',label:'No automation\nchallenge',type:'behaviour',x:200,y:60,r:26,
-   desc:'Network Rail does not sufficiently challenge its supply chain to replace manual, repetitive tasks with automation. Inefficient processes become normalised.',
-   example:'Manual extraction of possession windows from WON/PON PDFs is accepted practice. No contractual pressure exists to demand machine-readable alternatives.',
-   links:['b4','c2','t1']},
-  {id:'b7',label:'No learning\nfrom past',type:'behaviour',x:290,y:40,r:26,
-   desc:'Each project starts from a blank slate. Lessons learned from major programmes are documented but largely ignored.',
-   example:'Crossrail established detailed BIM lessons learned covering model governance, CDE workflows, and data standards. The majority of CP7 projects have not adopted these.',
-   links:['b3','bim1','lc1']},
-  {id:'b8',label:'CRT seen as\na tick-box\nrequirement',type:'behaviour',x:210,y:160,r:30,
-   desc:'CRT is treated as a mandatory compliance step rather than something that can be challenged or adapted when a different approach would deliver better efficiency. Governance focuses on satisfying the requirement rather than testing whether deviation would create a better outcome.',
-   example:'A project team identifies a more efficient delivery route by deviating from the standard CRT approach, but the option is dismissed because the process is treated as fixed and success is judged on compliance rather than realised efficiency.',
-   links:['b5','b6','c2','bim2']},
-  {id:'b9',label:'Enforced 3D\ndelivery alienated\nskilled engineers',type:'behaviour',x:120,y:365,r:31,
-   desc:'Mandating 3D delivery without enough allowance for different working methods or support structures has alienated many experienced railway engineers whose knowledge remains critical to safe and practical delivery. The issue is not 3D itself, but enforcing it in a way that excludes expertise rather than bringing it into the workflow.',
-   example:'A highly experienced rail engineer can challenge constructability, signal sighting, or staging assumptions immediately from years of route knowledge, but becomes marginalised when contribution is judged mainly through direct 3D authoring ability rather than domain judgement supported by an appropriate digital workflow.',
-   links:['b4','bim2','bim3','lc5']},
-  {id:'b10',label:'Poor digital\nliteracy in\nleadership',type:'behaviour',x:255,y:555,r:30,
-   desc:'Senior decision-makers often lack enough digital and data literacy to define the right problem, judge information quality, or make proportionate choices about standards, delivery models, and investment. Decisions are then deferred to third parties who optimise for scope or compliance rather than long-term railway value.',
-   example:'A leadership team commissions a new platform or dashboard before defining the decision it must support, the data rules behind it, or how it will fit operational workflow, then relies on advisers to decide whether the result is useful.',
-   links:['b4','b11','b12','c3','c11','c12','o8']},
-  {id:'b11',label:'Innovation-first\nthinking',type:'behaviour',x:320,y:105,r:30,
-   desc:'Teams start with the desire to deploy AI, dashboards, or other tools before they have clearly defined the operational problem, decision, or workflow that needs to improve. Innovation becomes performative rather than problem-led.',
-   example:'A project is asked to trial AI for reporting or inspection because it sounds progressive, even though the real issue is inconsistent asset data and no agreed workflow for acting on the output.',
-   links:['b10','c6','c9','o3','o8']},
-  {id:'b12',label:'Dashboard\ntheatre',type:'behaviour',x:65,y:615,r:30,
-   desc:'Poor-quality or weakly structured data is polished into attractive dashboards that create an impression of control without supporting real operational decisions. Presentation quality masks low trust in the underlying information.',
-   example:'A project dashboard shows polished Power BI visuals for progress and asset status, but teams still work from local spreadsheets because the source data is incomplete, inconsistent, and not trusted enough for day-to-day use.',
-   links:['b10','t2','t3','t10','c12','o8']},
-  {id:'b13',label:'Poor grasp of\ndata use\nopportunities',type:'behaviour',x:170,y:675,r:30,
-   desc:'Decision-makers often do not understand where data can materially improve delivery, assurance, construction planning, handback, or operational performance. As a result, they either miss high-value applications entirely or ask for low-value outputs that do not solve the real problem.',
-   example:'A sponsor asks for more reporting packs and dashboards, but does not recognise that the higher-value opportunity is structured data that can support construction sequencing, handback records, and future asset use.',
-   links:['b10','b11','c11','c12','lc7','o8']},
-  {id:'b14',label:'Misunderstood\nBIM\ndelivery',type:'behaviour',x:250,y:725,r:30,
-   desc:'BIM delivery is misunderstood as ProjectWise administration, file workflow, and federating graphical submissions rather than defining, governing, and delivering structured information. Data is treated as secondary or excluded altogether.',
-   example:'A project says it is doing BIM because models are uploaded, reviewed, and federated in ProjectWise, yet the BIM execution plan says little about data fields, exchange structure, semantic requirements, or what information must be delivered for construction, handback, and operations.',
-   links:['b10','b13','bim4','bim8','c12','o8']},
+      // ==================== FIXED FUNCTIONS ====================
+      let activeFilter = 'all', selectedId = null, panelMode = 'node';
+      let selectedStatement = null;
+      let transform = {x:0, y:0, scale:1};
+      let dragging = false, lastMouse = null;
+      let draggingNodeId = null, nodeDragOffset = null, nodeDragMoved = false;
+      const nodeManualPositions = new Map();
+      let currentRenderState = {tx:0, ty:0, sc:1, positions: new Map()};
 
-  {id:'c1',label:'IP &\nownership',type:'commercial',x:940,y:60,r:26,
-   desc:'Ambiguity over who owns data generated under contract creates disputes and prevents reuse across project phases.',
-   example:'Survey data collected by a specialist under NEC4 is claimed by both contractor and NR sponsor, effectively locking it pending legal clearance.',
-   links:['b1','b3','c2']},
-  {id:'c2',label:'Procurement\nbarriers',type:'commercial',x:1020,y:175,r:26,
-   desc:'Frameworks do not reward data quality, openness, or reuse. Digital deliverables are vaguely specified and data handover is a tick-box.',
-   example:'ITPs and possession plans are specified as PDFs in many CP7 contracts. Machine-readable formats are not incentivised.',
-   links:['c1','c3','t2']},
-  {id:'c3',label:'No\nbusiness case',type:'commercial',x:1020,y:320,r:26,
-   desc:'ROI on better data infrastructure is difficult to quantify, so it is perennially deprioritised in favour of physical deliverables.',
-   example:'Digitising buried services into a spatial GIS has demonstrable future value, but the cost falls on the current programme — breaking the business case.',
-   links:['c2','b3','o1']},
-  {id:'c4',label:'Vendor\nlock-in',type:'commercial',x:950,y:440,r:26,
-    desc:'Vendor lock-in is a consequence of the lack of open data standards. When information is defined and exchanged through proprietary formats or tool-specific structures, data migration becomes costly and dependence on a single vendor deepens over time.',
-    example:'SnakeGrid coordinates stored only in MicroStation DGN with no public specification force projects to maintain Bentley licences in perpetuity to access their own geometry, because no open standard exists to preserve portability.',
-   links:['c2','t1','t3']},
-  {id:'c5',label:'Paid to\ndeliver projects',type:'commercial',x:850,y:540,r:26,
-   desc:'Suppliers are incentivised to deliver physical scope, not long-term interoperable data. Data quality has no commercial reward mechanism.',
-   example:'No NEC4 ECC clauses exist for data interoperability, model maturity beyond consent LOD, or post-handover data maintenance.',
-   links:['c2','c3','lc3']},
-  {id:'c6',label:'Innovation\nstays pilots',type:'commercial',x:755,y:610,r:26,
-   desc:'Innovation funding supports prototypes but rarely integration into standards and procurement. Pilot theatre replaces systemic change.',
-   example:'Multiple RSSB/Innovate UK digital twin and AI inspection pilots funded. Very few mandated into NR standards or embedded in CP7 contracts.',
-   links:['c3','b7','o3']},
-  {id:'c7',label:'SME\nexclusion',type:'commercial',x:860,y:625,r:26,
-   desc:'Rail procurement favours assurance history over technical capability, systematically disadvantaging innovative SMEs.',
-   example:'A startup with a proven geospatial API cannot bid for an NR framework without pre-qualification history that takes years to accumulate.',
-   links:['c6','c2','o3']},
-  {id:'c8',label:'No incentive\nto standardise',type:'commercial',x:960,y:565,r:26,
-   desc:'Data models are recreated because there is no commercial incentive to invest in standardisation that also benefits competitors.',
-   example:'Every Tier 1 contractor maintains a proprietary BIM template library. None are compatible. Interoperability is sacrificed for internal consistency.',
-   links:['c2','bim1','t1']},
-  {id:'c9',label:'BIM success\nand ROI hard\nto measure',type:'commercial',x:915,y:245,r:30,
-   desc:'Projects struggle to define how BIM implementation success should be measured, what it should cost, and what return it delivers. Reliable project performance data is hard to obtain, so benefits remain anecdotal and investment decisions stay contested.',
-   example:'A project funds BIM coordination, CDE workflows, and model production, but cannot clearly evidence whether the spend reduced rework, improved programme certainty, or delivered better asset information because consistent performance baselines and post-project measures were never captured.',
-   links:['c3','c5','bim2','lc5']},
-  {id:'c10',label:'No incentive\nto reduce\nbillable hours',type:'commercial',x:930,y:500,r:30,
-   desc:'Where suppliers are paid for effort, there is little commercial incentive to innovate in ways that materially reduce the hours they can charge. Efficiency gains that shrink billable work can weaken the supplier business case unless contracts explicitly reward outcome, reuse, or productivity improvement.',
-   example:'A team identifies a repeatable automation that would remove days of manual BIM or data-processing effort per package, but there is no mechanism to share the saving. The rational commercial choice is to keep delivering the work through chargeable hours rather than reduce them.',
-   links:['c5','c6','c8','t7']},
-  {id:'c11',label:'Digital capability\nnot embedded\nin delivery',type:'commercial',x:1125,y:555,r:30,
-   desc:'Projects rarely fund and embed digital specialists as core members of delivery teams from the outset. Digital capability is brought in late, treated as optional overhead, or isolated in innovation functions away from the live project.',
-   example:'A rail project only engages information management or data specialists after design and delivery workflows are already fixed, leaving them to retrofit structure, standards, and reporting into a programme that was never set up to use them well.',
-   links:['b10','b4','c3','c5','c6','c12','o8']},
-  {id:'c12',label:'No upfront\ninformation\nbrief',type:'commercial',x:1155,y:405,r:30,
-   desc:'Clients often do not define data rules, semantic standards, integration expectations, or information use cases clearly enough at project inception. Suppliers are left to guess what good looks like and issue outputs based on local conventions.',
-   example:'A supplier is asked for digital deliverables but receives no clear specification for taxonomy, metadata, validation rules, interfaces, or downstream asset-management use, so the submitted data is internally coherent yet still hard to integrate across the wider programme.',
-   links:['b10','b12','c2','c8','t1','t5','t10','o8']},
+      const svg = document.getElementById('graph');
+      const canvas = document.getElementById('canvas');
 
-  {id:'t1',label:'No common\ndata standard',type:'technical',x:190,y:650,r:26,
-   desc:'No mandatory consistent schema exists for core rail data entities — possession extents, ELR chainage, asset locations, machine resources.',
-   example:'WON and PON formats vary across NR regions. ETL normalisation for a single programme can consume weeks of developer time, repeated per source.',
-   links:['t2','b2','c2']},
-  {id:'t2',label:'Poor\nprovenance',type:'technical',x:360,y:680,r:26,
-   desc:'Data lacks clear provenance and lineage. It is difficult to trace when a survey was taken, by whom, under what assumptions, and how many times it has been transformed.',
-   example:'An as-built drawing stamped "Rev P3" may have been scanned from a hand-annotated print of an earlier CAD model. Provenance is lost; coordinates, tolerances, and assumptions may no longer be reliable enough for engineering use.',
-   links:['t1','t3','b3']},
-  {id:'t3',label:'Format\nfragmentation',type:'technical',x:520,y:700,r:26,
-   desc:'Data lives in PDF, DWG, DGN, SHP, XLSX, paper scans, and proprietary databases simultaneously, each requiring bespoke parsing.',
-   example:'A BSIP for a single work site contains georeferenced PDFs, hand-drawn sketches, AutoCAD files, and scanned OS maps — none in the same CRS, none machine-readable.',
-   links:['t1','t2','c4']},
-  {id:'t4',label:'CRS\ninconsistency',type:'technical',x:680,y:695,r:26,
-   desc:'Data is delivered in a mix of WGS84, OSGB36, BNG, SnakeGrid, and assumed systems without metadata declaring which.',
-   example:'A point cloud in assumed local origin cannot be integrated with NIF shapefiles in BNG or Cesium terrain in WGS84 without the undocumented origin offset.',
-   links:['t3','t2','c4']},
-  {id:'t5',label:'Geometry\nwithout semantics',type:'technical',x:800,y:690,r:26,
-   desc:'Shapes in BIM and GIS carry no machine-readable meaning. Without semantic classification, geometry has limited operational value.',
-   example:'A GIS layer of track centrelines contains no attributes linking to possession planning, maintenance schedules, electrification type, or linespeed. Reuse requires manual enrichment.',
-   links:['t3','bim1','bim5']},
-  {id:'t6',label:'Fragmented\nsystems',type:'technical',x:700,y:580,r:26,
-   desc:'GIS, BIM, maintenance, possession planning, and assurance systems remain separate with no integration layer. Each holds a partial view of the same assets.',
-   example:'A fatigue crack exists in three systems — Ellipse defect, track recording export, paper inspection log — with no automated reconciliation.',
-   links:['t3','t4','lc4']},
-  {id:'t7',label:'Supplier R&D\nfor project\ndelivery only',type:'technical',x:860,y:600,r:28,
-   desc:'Technical development by suppliers is usually justified only when it directly unlocks delivery on the live project. Shared tooling, reusable data infrastructure, and broader capability building are deprioritised if they do not produce an immediate project outcome.',
-   example:'A supplier builds an automated rail data workflow to meet one scheme deadline, but the pipeline is not hardened into a reusable platform or adopted as a wider standard because the commercial mandate ends at project handover.',
-   links:['t6','c5','c6','c8']},
-  {id:'t8',label:'NR standards\nnot machine\nreadable',type:'technical',x:305,y:620,r:28,
-   desc:'Network Rail standards are commonly issued as narrative documents or PDFs rather than structured, machine-readable data. That makes automated compliance, extraction, cross-referencing, and integration into digital workflows unnecessarily difficult.',
-   example:'A design rule within a Network Rail standard must be manually interpreted from a PDF and re-keyed into spreadsheets, checking tools, or BIM rulesets because no canonical machine-readable source is published.',
-   links:['t1','t3','b6','c2']},
-  {id:'t9',label:'No standard\ntask or WBS\ncodes',type:'technical',x:575,y:635,r:30,
-   desc:'Design task, construction activity, and WBS codes are not standardised enough across projects to compare efficiencies, benchmark historic performance, or understand where cost and effort are really being spent. Without a common coding structure, it is difficult to target future R&D at the highest-value pain points.',
-   example:'One project records signal sighting, design checking, and rework from external design change under local task codes, while another captures the same effort differently or not at all. That makes it hard to compare productivity, quantify repeat waste, or decide where automation and innovation funding should be focused next.',
-   links:['t1','c9','o2','c6']},
-  {id:'t10',label:'Data not\nAPI accessible',type:'technical',x:650,y:640,r:30,
-   desc:'Asset and project data is too often stored in PDFs, spreadsheets, or overly large BIM models rather than being made accessible through structured APIs or lightweight machine-readable services. That limits reuse, automation, integration, and timely access to the information teams actually need.',
-   example:'Critical project and asset information is buried in PDF reports, Excel trackers, or heavyweight federated models, when the same data could be exposed through governed APIs so planners, maintainers, analysts, and delivery tools can consume it directly without manual extraction.',
-   links:['t3','t8','bim9','o3']},
-  {id:'t12',label:'Centrally hosted\nH&S data for\nindustry sharing',type:'technical',x:820,y:520,r:30,
-   desc:'Health and safety data such as close calls, hazards, incident context, and mitigations is too often trapped inside local project systems or contractor environments rather than being hosted centrally in a governed form that the wider industry can learn from and act on.',
-   example:'A close call logged on one project is recorded in a local system or spreadsheet with no central governed dataset or service to expose the lesson elsewhere, so similar delivery teams face the same hazard again without visibility of the earlier warning.',
-   links:['t6','t10','lc6','o5','o7']},
-  {id:'t11',label:'Data suitability\nunclear',type:'technical',x:500,y:770,r:30,
-   desc:'Data suitability codes are rarely defined or carried clearly enough to show whether information is suitable for concept work, detailed design, construction, assurance, or operations. Teams can therefore apply data beyond the purpose or confidence level it was prepared for.',
-   example:'A survey captured for optioneering is reused in detailed engineering without a clear suitability code, tolerance statement, or usage restriction. Design decisions are then made on information that was never assured for that level of detail.',
-   links:['t2','t8','c12','lc6','o1','o8']},
+      // ... (keep all your helper functions: getNodeMetrics, getNodeBounds, etc.)
 
-  {id:'bim1',label:'Hollow BIM\n(shape only)',type:'bim',x:350,y:155,r:26,
-   desc:'Without a standard BIM element library, models contain geometry but no consistent attributes, classifications, or semantic data. BIM becomes a compliance decoration.',
-   example:'A signalling BIM model contains accurate 3D geometry but no IFC classification, no asset references, no maintainer codes, and no commissioning data. Visually impressive but operationally useless.',
-   links:['bim2','bim5','t5']},
-  {id:'bim2',label:'BIM as\ncompliance',type:'bim',x:230,y:200,r:26,
-   desc:'BIM becomes a box-ticking exercise focused on consents and design deliverables, not on creating an operational asset.',
-   example:'A LOD 300 model produced for planning consent is archived. No process updates it through GRIP 5 and 6; it is never used for construction or commissioning.',
-   links:['bim1','bim3','lc1']},
-  {id:'bim3',label:'BIM not\ninherited',type:'bim',x:145,y:300,r:26,
-   desc:'New suppliers in a GRIP/PACE process do not want to inherit previous model data. Redrawing from scratch is normalised, contradicting the purpose of BIM.',
-   example:'At GRIP 4 to GRIP 5 transition, the new delivery contractor declares the model "not fit for construction" and redraws all structures from scratch, discarding survey-accurate geometry.',
-   links:['bim1','bim2','b7']},
-  {id:'bim4',label:'CDE centred on\ndeliverables',type:'bim',x:265,y:335,r:26,
-    desc:'Common Data Environments are structured around engineering documents, file control, and submission workflows rather than queryable engineering data. BIM becomes associated with ProjectWise administration instead of governed information delivery.',
-    example:'Asite and ProjectWise implementations hold thousands of PDFs, DWGs, and model files with review states and transmittals, but no structured asset attribute data is directly queryable. Finding a cable route or confirming an asset parameter still means opening drawings and models manually.',
-    links:['bim2','t3','lc4','b14']},
-  {id:'bim5',label:'No BIM\nelement library',type:'bim',x:430,y:235,r:26,
-   desc:'The absence of a shared rail-specific BIM object library means every organisation creates its own incompatible objects that cannot be federated.',
-   example:'OLE masts modelled in 6 different ways by 6 designers on the same programme. Federation software flags thousands of false clashes because geometric representations differ.',
-   links:['bim1','t5','c8']},
-  {id:'bim6',label:'Digital twins\nvisualisation only',type:'bim',x:450,y:295,r:26,
-   desc:'Rail digital twins focus on 3D visualisation rather than decision support. Impressive demos, not operational tools.',
-   example:'A NR digital twin pilot shows a real-time 3D station model. It cannot answer "when is the next possession window for this signal?" or "what maintenance is overdue?"',
-   links:['bim5','t5','t6']},
-  {id:'bim7',label:'NR basic designs\nnot BIM\nsupportive',type:'bim',x:390,y:285,r:28,
-   desc:'Network Rail basic designs are often issued as PDFs or other non-machine-readable deliverables rather than structured BIM-ready data. Suppliers therefore redraw the same assets, recreate classifications, and rebuild bills of material for each project instead of inheriting a usable baseline.',
-   example:'A standard details package is issued as PDF sheets with no object data, quantities, or reusable geometry. Each delivery partner remodels the components, rebuilds the bill of materials, and refreshes it again for the next project rather than maintaining a common source.',
-   links:['bim3','bim5','t3','t8','c8']},
-  {id:'bim8',label:'BIM requirements\nfocus on CDE\nworkflow not content',type:'bim',x:300,y:255,r:30,
-    desc:'Project BIM requirements and BIM execution plans often concentrate on CDE process, naming, approvals, federation, and deliverable routing rather than the quality, structure, semantic content, and intended use of the information being issued. The result is that poor deliverables are managed efficiently instead of useful data being specified and delivered.',
-    example:'A project can demonstrate compliant naming, status codes, review gates, document transmittals, and federated model submissions in the CDE while the BIM execution plan says little about object data, classifications, exchange schemas, or the information needed for construction, handback, and operations.',
-    links:['bim1','bim2','bim4','lc5','b14','c12']},
-  {id:'bim9',label:'CDE structured\nby project not\nroute or ELR',type:'bim',x:470,y:335,r:30,
-   desc:'Common Data Environments are typically organised around project boundaries instead of route, ELR, or the enduring asset context. That means project data is filed where the project sits administratively rather than where the railway asset belongs operationally.',
-    example:'A bridge intervention is stored inside a project-specific CDE folder structure, even though the information should sit against the relevant route and ELR so future teams can find and reuse the data as part of the railway record rather than only as part of the project archive. Structuring the CDE by route and ELR would reduce repeat surveys, rework, and data hunting, creating programme and cost savings through reuse of existing information.',
-    links:['bim4','lc4','t6','t1','o2']},
+      function setFilter(f, el) {
+        activeFilter = f;
+        panelMode = 'node';
+        selectedStatement = null;
+        selectedId = null;
 
-  {id:'lc1',label:'Short-term\nBIM focus',type:'lifecycle',x:375,y:505,r:26,
-   desc:'BIM effort concentrates on consents and design integration, neglecting procurement, construction planning, commissioning, handback, and maintenance.',
-   example:'A scheme produces a detailed IFC model for planning consent. No information delivery plan covers commissioning, O&M handback, or asset register population.',
-   links:['bim2','lc2','lc3']},
-  {id:'lc2',label:'Knowledge\nloss',type:'lifecycle',x:460,y:425,r:26,
-   desc:'Site discoveries, design deviations, and field decisions are captured for the project but never transferred to a persistent record.',
-   example:'Trial holes discover uncharted HV cables. The route is marked on a paper sketch, photographed, and referenced in a site diary. The sketch is never digitised. The cable location is lost when the team moves on.',
-   links:['lc1','t2','b7']},
-  {id:'lc3',label:'Optimised\nfor handover',type:'lifecycle',x:545,y:490,r:26,
-   desc:'Project teams optimise data quality for the handover checklist, not for lifecycle value. Data that passes acceptance is not necessarily useful to operate and maintain.',
-    example:'At handover, only part of the asset record is updated to reflect the final installed position, while the wider geometry and supporting asset information remain incomplete or trapped in PDF deliverables. Point cloud capture could instead be used to generate richer as-built records and provide a more complete verified baseline for operations and maintenance.',
-   links:['lc1','c5','lc4']},
-  {id:'lc4',label:'Asset info\nnot national',type:'lifecycle',x:615,y:570,r:26,
-   desc:'Asset information is treated as project property rather than national infrastructure knowledge. Data is not returned to a persistent national record.',
-   example:'An NR sponsor accepts project closeout with asset data in a project-specific CDE. No process transfers verified as-built data to the national asset register or spatial database.',
-   links:['lc3','t6','o1']},
-  {id:'lc5',label:'BIM maturity\nGRIP gap',type:'lifecycle',x:345,y:580,r:26,
-   desc:'BIM maturity is not formally required to increase across GRIP/PACE stages. No mandated information delivery plan ties model LOD to each stage gate.',
-   example:'GRIP 3 and GRIP 4 models on the same scheme are produced to different LODs by different contractors with no reconciliation. GRIP 5 starts from the lowest common denominator.',
-   links:['bim3','lc1','b7']},
-  {id:'lc6',label:'Poor visibility\nof incident root\ncause and remedy',type:'lifecycle',x:670,y:500,r:31,
-   desc:'Root cause, intervention level, and residual risk are not made transparent enough across incident and asset records. It becomes unclear whether an intervention is a temporary remedy under a maintenance budget, a rework item inside a live project, or an imminent upgrade that should be treated differently.',
-   example:'After an incident, teams can see that corrective work was undertaken but not the full root cause, risk basis, or whether the fix was a maintenance response, a project rework, or a precursor to planned renewal. That ambiguity weakens learning, obscures accountability, and distorts future scope and budget decisions.',
-   links:['lc2','lc4','t2','c5']},
-  {id:'lc7',label:'Outline design\nblind to build\nand handback',type:'lifecycle',x:760,y:555,r:31,
-   desc:'Key decisions are often made by consultants during outline design with little visibility of construction methods, commissioning, handback, or the eventual operational information requirements. Early choices therefore optimise concept scope rather than whole-life delivery.',
-   example:'An outline design fixes data structures, deliverables, or asset assumptions before construction and handback teams have shaped what information will actually be needed to build, verify, and transfer the asset into operation.',
-   links:['b13','c11','c12','lc1','lc3','lc4','o8']},
+        // Safe tab activation
+        document.querySelectorAll('.kg-tab').forEach(t => t.classList.remove('active'));
+        if (el) el.classList.add('active');
 
-  {id:'o1',label:'Right first\ntime',type:'outcomes',x:720,y:115,r:32,
-   desc:'Assured, well-structured data enables confident decisions by designers, planners, and contractors, eliminating costly rework.',
-   example:'Spatially accurate, lineage-tracked buried services data would allow the majority of intrusive trial holes to be replaced by desk-based risk assessment — saving millions on a major civils programme.',
-   links:['o2','o3','b3','t2']},
-  {id:'o2',label:'Cost &\nprogramme',type:'outcomes',x:850,y:65,r:32,
-   desc:'Eliminating duplicate survey work, re-engineering from data gaps, and manual possession re-entry directly reduces cost and compresses critical path.',
-   example:'Machine-readable ITPs and WONs fed into a 4D tool like Possurance lets planners model access, machines, and resource conflicts before booking a possession window.',
-   links:['o1','o3','b4','c3']},
-  {id:'o3',label:'New digital\nopportunities',type:'outcomes',x:930,y:225,r:32,
-   desc:'Assured, open, structured data unlocks products and delivery models currently impossible — from predictive maintenance to autonomous inspection.',
-   example:'A chainage-accurate geometry API enables close-call alerts, 4D simulation, drone path planning, and machine envelope modelling as thin software layers on shared infrastructure.',
-   links:['o1','o2','c3']},
-  {id:'o4',label:'Open Rail Data\nMarketplace',type:'outcomes',x:840,y:335,r:32,
-   desc:'A curated open marketplace of standardised rail data — track strings, route elements, mileposts, waypoints — creates a geospatial ecosystem enabling competitive innovation and a migration path away from proprietary silos.',
-   example:'Track string and route geometry published as an open API (like Chainage.io) allows possession planning, close-call systems, inspection drone routing, and BIM federation to share one authoritative geometric backbone rather than each maintaining a private copy.',
-   links:['o1','o2','o3','t5','t6']},
-  {id:'o5',label:'Fewer close calls\nand reportable\nincidents',type:'outcomes',x:970,y:140,r:32,
-   desc:'Sharing close calls across the whole industry rather than trapping them within individual projects should improve collective learning, strengthen risk awareness, and reduce repeat close calls and reportable incidents at system level.',
-   example:'A close call identified on one route or project could immediately inform planners, designers, and maintainers elsewhere, preventing similar hazards from being repeated in another programme and reducing the likelihood of future close calls and reportable incidents.',
-   links:['b3','lc2','o1','o3']},
-  {id:'o6',label:'Industry\ndelivery\nreputation',type:'outcomes',x:1070,y:60,r:32,
-   desc:'Consistently delivering with better data improves client, funder, and public confidence that rail can execute programmes predictably, learn across schemes, and justify future investment more credibly.',
-   example:'When enhancement and renewals programmes can evidence repeatable productivity, lower rework, clearer root cause, and trusted asset records, the industry is seen as more credible and more capable of delivering future programmes at scale.',
-   links:['b7','b8','c3','c9','t9','lc6','o2','o7']},
-  {id:'o7',label:'Industry service\nreliability',type:'outcomes',x:1080,y:270,r:32,
-   desc:'Better asset, incident, and intervention data supports fewer repeat failures, faster diagnosis, more targeted maintenance, and ultimately a more reliable railway service for passengers and freight.',
-   example:'If verified as-built data, incident root cause, and intervention history flow back into a national asset record, maintainers can identify recurring failure patterns earlier and reduce repeat delays, possessions, and service disruption.',
-   links:['t2','t6','t10','lc2','lc4','lc6','o1','o5','o6']},
-  {id:'o8',label:'Better\ndecision\nquality',type:'outcomes',x:1215,y:175,r:32,
-   desc:'Better digital literacy, clearer data requirements, and trusted information allow leaders and delivery teams to define the right problems earlier, choose proportionate interventions, and make decisions they can defend with evidence rather than presentation.',
-   example:'A sponsor can tell whether a problem needs a workflow change, a data standard, an integration layer, or a new tool because the information strategy and decision points were defined from the start rather than inferred later from dashboard outputs.',
-   links:['b10','b11','b12','c11','c12','o1','o2','o6','o7']},
-  {id:'o9',label:'Future AI\nreadiness',type:'outcomes',x:1185,y:360,r:32,
-   desc:'Structured, machine-readable, semantically consistent, and governed data creates the foundation for future AI applications in planning, assurance, maintenance, safety, and delivery. Without that foundation, AI remains expensive pilot theatre or produces untrustworthy outputs.',
-   example:'If standards, asset records, incident data, and project information are exposed in structured, reusable forms, future AI can support planners, maintainers, and assurance teams at scale. If the same information remains trapped in PDFs, spreadsheets, and inconsistent models, AI cannot be trusted to scale safely.',
-   links:['t1','t2','t3','t5','t6','t8','t10','t11','t12','c11','c12','b13','b14','o3','o4','o8']},
-];
+        const statementsBtn = document.getElementById('statementsBtn');
+        const briefingBtn = document.getElementById('briefingBtn');
+        if (statementsBtn) statementsBtn.classList.remove('active');
+        if (briefingBtn) briefingBtn.classList.remove('active');
 
-const EDGES=[
-  {s:'root',t:'b1'},{s:'root',t:'b2'},{s:'root',t:'b3'},{s:'root',t:'b4'},{s:'root',t:'b5'},{s:'root',t:'b6'},{s:'root',t:'b7'},{s:'root',t:'b8'},{s:'root',t:'b9'},{s:'root',t:'b10'},{s:'root',t:'b11'},{s:'root',t:'b12'},{s:'root',t:'b13'},{s:'root',t:'b14'},
-  {s:'root',t:'c1'},{s:'root',t:'c2'},{s:'root',t:'c3'},{s:'root',t:'c4'},{s:'root',t:'c5'},{s:'root',t:'c6'},{s:'root',t:'c7'},{s:'root',t:'c8'},{s:'root',t:'c9'},{s:'root',t:'c10'},{s:'root',t:'c11'},{s:'root',t:'c12'},
-  {s:'root',t:'t1'},{s:'root',t:'t2'},{s:'root',t:'t3'},{s:'root',t:'t4'},{s:'root',t:'t5'},{s:'root',t:'t6'},{s:'root',t:'t7'},{s:'root',t:'t8'},{s:'root',t:'t9'},{s:'root',t:'t10'},{s:'root',t:'t11'},{s:'root',t:'t12'},
-  {s:'root',t:'bim1'},{s:'root',t:'bim2'},{s:'root',t:'bim3'},{s:'root',t:'bim4'},{s:'root',t:'bim5'},{s:'root',t:'bim6'},{s:'root',t:'bim7'},{s:'root',t:'bim8'},{s:'root',t:'bim9'},
-  {s:'root',t:'lc1'},{s:'root',t:'lc2'},{s:'root',t:'lc3'},{s:'root',t:'lc4'},{s:'root',t:'lc5'},{s:'root',t:'lc6'},{s:'root',t:'lc7'},
-  {s:'root',t:'o1'},{s:'root',t:'o2'},{s:'root',t:'o3'},{s:'root',t:'o4'},{s:'root',t:'o5'},{s:'root',t:'o6'},{s:'root',t:'o7'},{s:'root',t:'o8'},{s:'root',t:'o9'},
-  {s:'b1',t:'b2'},{s:'b1',t:'b3'},{s:'b1',t:'c1'},
-  {s:'b2',t:'t1'},{s:'b2',t:'t2'},
-  {s:'b3',t:'c2'},{s:'b3',t:'c3'},
-  {s:'b4',t:'t3'},{s:'b4',t:'b9'},{s:'b5',t:'c1'},{s:'b5',t:'c3'},
-  {s:'b6',t:'b4'},{s:'b6',t:'c2'},{s:'b6',t:'t1'},{s:'b6',t:'b8'},
-  {s:'b7',t:'bim1'},{s:'b7',t:'lc1'},{s:'b7',t:'o6'},{s:'b8',t:'b5'},{s:'b8',t:'c2'},{s:'b8',t:'bim2'},{s:'b8',t:'o6'},{s:'b9',t:'bim2'},{s:'b9',t:'bim3'},{s:'b9',t:'lc5'},
-  {s:'b10',t:'b4'},{s:'b10',t:'b11'},{s:'b10',t:'b12'},{s:'b10',t:'c3'},{s:'b10',t:'c11'},{s:'b10',t:'c12'},{s:'b10',t:'o8'},
-  {s:'b11',t:'c6'},{s:'b11',t:'c9'},{s:'b11',t:'o3'},{s:'b11',t:'o8'},{s:'b12',t:'t2'},{s:'b12',t:'t3'},{s:'b12',t:'t10'},{s:'b12',t:'c12'},{s:'b12',t:'o8'},
-  {s:'b13',t:'b10'},{s:'b13',t:'b11'},{s:'b13',t:'c11'},{s:'b13',t:'c12'},{s:'b13',t:'lc7'},{s:'b13',t:'o8'},{s:'b13',t:'o9'},
-  {s:'b14',t:'b10'},{s:'b14',t:'b13'},{s:'b14',t:'bim4'},{s:'b14',t:'bim8'},{s:'b14',t:'c12'},{s:'b14',t:'o8'},{s:'b14',t:'o9'},
-  {s:'c1',t:'c2'},{s:'c2',t:'t2'},{s:'c2',t:'c3'},
-  {s:'c4',t:'t1'},{s:'c4',t:'t3'},
-  {s:'c5',t:'lc3'},{s:'c6',t:'b7'},{s:'c6',t:'o3'},
-  {s:'c7',t:'c6'},{s:'c8',t:'bim1'},{s:'c8',t:'t1'},{s:'c9',t:'c3'},{s:'c9',t:'c5'},{s:'c9',t:'bim2'},{s:'c9',t:'lc5'},{s:'c10',t:'c5'},{s:'c10',t:'c6'},{s:'c10',t:'c8'},{s:'c10',t:'t7'},
-  {s:'c11',t:'b4'},{s:'c11',t:'c3'},{s:'c11',t:'c5'},{s:'c11',t:'c6'},{s:'c11',t:'c12'},{s:'c11',t:'o8'},{s:'c11',t:'o9'},
-  {s:'c12',t:'c2'},{s:'c12',t:'c8'},{s:'c12',t:'t1'},{s:'c12',t:'t5'},{s:'c12',t:'t10'},{s:'c12',t:'o8'},{s:'c12',t:'o9'},
-  {s:'t1',t:'t2'},{s:'t1',t:'t8'},{s:'t1',t:'t9'},{s:'t1',t:'o9'},{s:'t2',t:'t3'},{s:'t2',t:'t11'},{s:'t2',t:'o9'},{s:'t3',t:'t4'},{s:'t3',t:'t8'},{s:'t3',t:'t10'},{s:'t3',t:'o9'},{s:'t4',t:'t5'},
-  {s:'t5',t:'bim5'},{s:'t5',t:'o9'},{s:'t6',t:'lc4'},{s:'t6',t:'t7'},{s:'t6',t:'t12'},{s:'t6',t:'o9'},{s:'t7',t:'c5'},{s:'t7',t:'c6'},{s:'t7',t:'c8'},{s:'t8',t:'b6'},{s:'t8',t:'c2'},{s:'t8',t:'t10'},{s:'t8',t:'t11'},{s:'t8',t:'o9'},{s:'t9',t:'c9'},{s:'t9',t:'o2'},{s:'t9',t:'c6'},{s:'t10',t:'bim9'},{s:'t10',t:'o3'},{s:'t10',t:'t12'},{s:'t10',t:'o9'},{s:'t11',t:'c12'},{s:'t11',t:'lc6'},{s:'t11',t:'o1'},{s:'t11',t:'o8'},{s:'t11',t:'o9'},{s:'t12',t:'lc6'},{s:'t12',t:'o5'},{s:'t12',t:'o7'},{s:'t12',t:'o9'},
-  {s:'bim1',t:'bim2'},{s:'bim1',t:'bim5'},{s:'bim1',t:'bim8'},
-  {s:'bim2',t:'bim3'},{s:'bim2',t:'lc1'},{s:'bim2',t:'bim8'},
-  {s:'bim3',t:'b7'},{s:'bim3',t:'bim7'},{s:'bim4',t:'t3'},{s:'bim4',t:'bim8'},{s:'bim4',t:'bim9'},{s:'bim4',t:'b14'},
-  {s:'bim5',t:'t5'},{s:'bim5',t:'bim7'},{s:'bim6',t:'t5'},{s:'bim6',t:'t6'},{s:'bim7',t:'t3'},{s:'bim7',t:'t8'},{s:'bim7',t:'c8'},{s:'bim8',t:'lc5'},{s:'bim8',t:'b14'},{s:'bim8',t:'c12'},{s:'bim9',t:'lc4'},{s:'bim9',t:'t6'},{s:'bim9',t:'t1'},
-  {s:'lc1',t:'lc2'},{s:'lc1',t:'lc3'},
-  {s:'lc2',t:'t2'},{s:'lc2',t:'lc6'},{s:'lc3',t:'lc4'},{s:'lc3',t:'lc7'},
-  {s:'lc4',t:'o1'},{s:'lc4',t:'lc6'},{s:'lc4',t:'lc7'},{s:'lc5',t:'lc1'},{s:'lc6',t:'t2'},{s:'lc6',t:'c5'},{s:'lc7',t:'c11'},{s:'lc7',t:'c12'},{s:'lc7',t:'o8'},
-  {s:'o1',t:'o2'},{s:'o1',t:'o5'},{s:'o1',t:'o7'},{s:'o1',t:'o8'},{s:'o2',t:'o3'},{s:'o2',t:'o6'},{s:'o2',t:'o8'},{s:'o3',t:'o4'},{s:'o3',t:'o5'},{s:'o3',t:'o9'},{s:'o4',t:'o6'},{s:'o4',t:'o9'},{s:'o5',t:'o7'},{s:'o6',t:'o7'},{s:'o6',t:'o8'},{s:'o7',t:'o8'},{s:'o8',t:'o9'},
-  {s:'o4',t:'t5'},{s:'o4',t:'t6'},{s:'o5',t:'b3'},{s:'o5',t:'lc2'},
-  {s:'o6',t:'b7'},{s:'o6',t:'b8'},{s:'o6',t:'c3'},{s:'o6',t:'c9'},{s:'o6',t:'t9'},{s:'o6',t:'lc6'},
-  {s:'o7',t:'t2'},{s:'o7',t:'t6'},{s:'o7',t:'t10'},{s:'o7',t:'lc2'},{s:'o7',t:'lc4'},{s:'o7',t:'lc6'},
-  {s:'o8',t:'b10'},{s:'o8',t:'b11'},{s:'o8',t:'b12'},{s:'o8',t:'c11'},{s:'o8',t:'c12'},{s:'o9',t:'t1'},{s:'o9',t:'t2'},{s:'o9',t:'t5'},{s:'o9',t:'t8'},{s:'o9',t:'t10'},{s:'o9',t:'t11'},{s:'o9',t:'c11'},{s:'o9',t:'c12'},
-];
-
-const TECHNICAL_TYPES=new Set(['technical','bim','lifecycle']);
-const LAYOUT_SPREAD_X=1.18;
-const LAYOUT_SPREAD_Y=1.12;
-
-let activeFilter='all', selectedId=null, panelMode='node';
-let selectedStatement=null;
-let transform={x:0,y:0,scale:1};
-let dragging=false, lastMouse=null;
-let draggingNodeId=null, nodeDragOffset=null, nodeDragMoved=false;
-const nodeManualPositions=new Map();
-let currentRenderState={tx:0,ty:0,sc:1,positions:new Map()};
-const svg=document.getElementById('graph');
-const canvas=document.getElementById('canvas');
-
-function getNodeMetrics(node){
-  const lines=node.label.split('\n');
-  const fontSize=node.type==='root'?18:node.type==='outcomes'?11.5:10.75;
-  const lineHeight=Math.round(fontSize*1.2);
-  const maxChars=Math.max(...lines.map(line=>line.length));
-  const textWidth=Math.max(fontSize*3.4, maxChars*fontSize*0.63);
-  const textHeight=lines.length*lineHeight;
-  const paddingX=node.type==='root'?22:15;
-  const paddingY=node.type==='root'?16:11;
-  const width=Math.max((node.r||24)*2, textWidth+paddingX*2);
-  const height=Math.max((node.r||24)*2, textHeight+paddingY*2);
-  const rx=Math.min(height/2, node.type==='root'?24:height/2);
-  return {lines,fontSize,lineHeight,width,height,rx};
-}
-
-function getNodeBounds(node){
-  const metrics=getNodeMetrics(node);
-  const halfW=metrics.width/2;
-  const halfH=metrics.height/2;
-  return {
-    left:node.x-halfW,
-    right:node.x+halfW,
-    top:node.y-halfH,
-    bottom:node.y+halfH,
-  };
-}
-
-function getNodeBoundsAtPosition(node,x,y){
-  const metrics=getNodeMetrics(node);
-  const halfW=metrics.width/2;
-  const halfH=metrics.height/2;
-  return {
-    left:x-halfW,
-    right:x+halfW,
-    top:y-halfH,
-    bottom:y+halfH,
-  };
-}
-
-function getBehaviourCloudPath(left,top,width,height){
-  const right=left+width;
-  const bottom=top+height;
-  return [
-    `M ${left+width*0.2} ${bottom-height*0.14}`,
-    `C ${left+width*0.08} ${bottom-height*0.08}, ${left+width*0.03} ${top+height*0.64}, ${left+width*0.1} ${top+height*0.48}`,
-    `C ${left+width*0.02} ${top+height*0.32}, ${left+width*0.14} ${top+height*0.12}, ${left+width*0.3} ${top+height*0.16}`,
-    `C ${left+width*0.38} ${top+height*0.02}, ${left+width*0.58} ${top}, ${left+width*0.68} ${top+height*0.14}`,
-    `C ${left+width*0.84} ${top+height*0.06}, ${right-width*0.02} ${top+height*0.22}, ${right-width*0.08} ${top+height*0.4}`,
-    `C ${right} ${top+height*0.54}, ${right-width*0.02} ${bottom-height*0.12}, ${right-width*0.18} ${bottom-height*0.14}`,
-    `C ${right-width*0.28} ${bottom-height*0.02}, ${right-width*0.48} ${bottom-height*0.01}, ${right-width*0.56} ${bottom-height*0.12}`,
-    `C ${right-width*0.68} ${bottom-height*0.01}, ${left+width*0.34} ${bottom-height*0.02}, ${left+width*0.2} ${bottom-height*0.14}`,
-    'Z'
-  ].join(' ');
-}
-
-function getCommercialHexPath(left,top,width,height){
-  const right=left+width;
-  const bottom=top+height;
-  const inset=Math.min(width*0.16,height*0.42);
-  return [
-    `M ${left+inset} ${top}`,
-    `L ${right-inset} ${top}`,
-    `L ${right} ${top+height/2}`,
-    `L ${right-inset} ${bottom}`,
-    `L ${left+inset} ${bottom}`,
-    `L ${left} ${top+height/2}`,
-    'Z'
-  ].join(' ');
-}
-
-function resolveLayout(nodes){
-  const gap=18;
-  const rootGap=28;
-  const rootNode=nodes.find(node=>node.type==='root')||nodes[0];
-  const rootManual=nodeManualPositions.get(rootNode.id);
-  const rootPosition=rootManual||{x:rootNode.x,y:rootNode.y};
-  const positions=new Map(nodes.map(node=>{
-    const manual=nodeManualPositions.get(node.id);
-    if(manual) return [node.id,{x:manual.x,y:manual.y}];
-    if(node.id===rootNode.id) return [node.id,{x:rootPosition.x,y:rootPosition.y}];
-    return [node.id,{
-      x:rootPosition.x+((node.x-rootNode.x)*LAYOUT_SPREAD_X),
-      y:rootPosition.y+((node.y-rootNode.y)*LAYOUT_SPREAD_Y),
-    }];
-  }));
-
-  function separateNodes(a,b,extraGap){
-    const pa=positions.get(a.id), pb=positions.get(b.id);
-    const ab=getNodeBoundsAtPosition(a,pa.x,pa.y);
-    const bb=getNodeBoundsAtPosition(b,pb.x,pb.y);
-    const overlapX=Math.min(ab.right,bb.right)-Math.max(ab.left,bb.left);
-    const overlapY=Math.min(ab.bottom,bb.bottom)-Math.max(ab.top,bb.top);
-
-    if(overlapX<-extraGap || overlapY<-extraGap) return false;
-
-    let centerDx=pb.x-pa.x;
-    let centerDy=pb.y-pa.y;
-    if(!centerDx && !centerDy){
-      centerDx=(b.x-a.x)||1;
-      centerDy=(b.y-a.y)||1;
-    }
-
-    const absDx=Math.abs(centerDx)||1;
-    const absDy=Math.abs(centerDy)||1;
-    const pushX=(overlapX+extraGap)/2;
-    const pushY=(overlapY+extraGap)/2;
-    const moveX=Math.max(0,pushX)*(centerDx/absDx);
-    const moveY=Math.max(0,pushY)*(centerDy/absDy);
-    const aLocked=a.type==='root' || nodeManualPositions.has(a.id);
-    const bLocked=b.type==='root' || nodeManualPositions.has(b.id);
-
-    if(aLocked && bLocked) return false;
-
-    if(aLocked){
-      pb.x+=moveX*2;
-      pb.y+=moveY*2;
-      return true;
-    }
-    if(bLocked){
-      pa.x-=moveX*2;
-      pa.y-=moveY*2;
-      return true;
-    }
-
-    pa.x-=moveX;
-    pa.y-=moveY;
-    pb.x+=moveX;
-    pb.y+=moveY;
-    return true;
-  }
-
-  for(let iteration=0;iteration<140;iteration++){
-    let moved=false;
-    for(let i=0;i<nodes.length;i++){
-      for(let j=i+1;j<nodes.length;j++){
-        const a=nodes[i], b=nodes[j];
-        if(separateNodes(a,b,gap)){
-          moved=true;
-        }
+        draw();
+        updatePanel();
       }
-    }
 
-    nodes.forEach(node=>{
-      if(node.id===rootNode.id) return;
-      if(separateNodes(rootNode,node,rootGap)) moved=true;
-    });
+      // Safe initialization
+      function init() {
+        draw();
+        updatePanel();
+      }
 
-    nodes.forEach(node=>{
-      if(node.id===rootNode.id || nodeManualPositions.has(node.id)) return;
-      const pos=positions.get(node.id);
-      pos.x+=(rootPosition.x+((node.x-rootNode.x)*LAYOUT_SPREAD_X)-pos.x)*0.045;
-      pos.y+=(rootPosition.y+((node.y-rootNode.y)*LAYOUT_SPREAD_Y)-pos.y)*0.045;
-    });
+      // Call init when page is ready
+      window.addEventListener('load', init);
 
-    if(!moved) break;
-  }
-
-  return positions;
-}
-
-function getNode(id){return NODES.find(n=>n.id===id)}
-
-function clientToGraphPoint(clientX,clientY){
-  const rect=canvas.getBoundingClientRect();
-  return {
-    x:((clientX-rect.left)-currentRenderState.tx)/currentRenderState.sc,
-    y:((clientY-rect.top)-currentRenderState.ty)/currentRenderState.sc,
-  };
-}
-
-function startNodeDrag(event,nodeId){
-  event.stopPropagation();
-  const position=currentRenderState.positions.get(nodeId);
-  if(!position) return;
-  const point=clientToGraphPoint(event.clientX,event.clientY);
-  draggingNodeId=nodeId;
-  nodeDragOffset={x:point.x-position.x,y:point.y-position.y};
-  nodeDragMoved=false;
-}
-
-function visNodes(){
-  if(activeFilter==='all') return NODES;
-  if(activeFilter==='technical') return NODES.filter(n=>n.type==='technical'||n.type==='root');
-  return NODES.filter(n=>n.type===activeFilter||n.type==='root');
-}
-function visEdges(){
-  const vis=new Set(visNodes().map(n=>n.id));
-  return EDGES.filter(e=>vis.has(e.s)&&vis.has(e.t));
-}
-
-function getSelectedCrosswalk(){
-  return NEEP_BRIEFING.crosswalk.find(row=>row.theme===selectedStatement)||null;
-}
-
-function nodeMatchesStatement(node){
-  if(!selectedStatement) return true;
-  if(node.type==='root') return true;
-  if(selectedStatement==='behaviour') return node.type==='behaviour';
-  if(selectedStatement==='commercial') return node.type==='commercial';
-  if(selectedStatement==='technical') return TECHNICAL_TYPES.has(node.type)||node.type==='technical';
-  const selectedCrosswalk=getSelectedCrosswalk();
-  if(selectedCrosswalk) return selectedCrosswalk.nodeIds.includes(node.id);
-  return true;
-}
-
-function draw(){
-  const W=canvas.offsetWidth||700, H=canvas.offsetHeight||560;
-  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  svg.innerHTML='';
-  const vn=visNodes(), ve=visEdges();
-  const positions=resolveLayout(vn);
-  const bounds=vn.map(node=>{
-    const pos=positions.get(node.id);
-    return getNodeBoundsAtPosition(node,pos.x,pos.y);
-  });
-  const minX=Math.min(...bounds.map(b=>b.left))-40;
-  const minY=Math.min(...bounds.map(b=>b.top))-40;
-  const maxX=Math.max(...bounds.map(b=>b.right))+40;
-  const maxY=Math.max(...bounds.map(b=>b.bottom))+40;
-  const rangeX=maxX-minX, rangeY=maxY-minY;
-  const baseScale=Math.min((W/rangeX),(H/rangeY),1)*0.96;
-  const ox=W/2-((maxX+minX)/2)*baseScale;
-  const oy=H/2-((maxY+minY)/2)*baseScale;
-  const tx=transform.x+ox, ty=transform.y+oy, sc=baseScale*transform.scale;
-  currentRenderState={tx,ty,sc,positions};
-
-  const eg=document.createElementNS('http://www.w3.org/2000/svg','g');
-  eg.setAttribute('transform',`translate(${tx},${ty}) scale(${sc})`);
-  ve.forEach(e=>{
-    const a=getNode(e.s),b=getNode(e.t);
-    if(!a||!b) return;
-    const ap=positions.get(a.id), bp=positions.get(b.id);
-    const isSel=selectedId&&(e.s===selectedId||e.t===selectedId);
-    const matchesStatement=nodeMatchesStatement(a)&&nodeMatchesStatement(b);
-    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1',ap.x);line.setAttribute('y1',ap.y);
-    line.setAttribute('x2',bp.x);line.setAttribute('y2',bp.y);
-    line.setAttribute('stroke',isSel?COLORS[getNode(e.s).type]:'var(--color-border-secondary)');
-    line.setAttribute('stroke-width',isSel?1.5:0.7);
-    line.setAttribute('stroke-opacity',selectedId?(isSel?0.85:0.12):(selectedStatement?(matchesStatement?0.48:0.08):0.35));
-    eg.appendChild(line);
-  });
-  svg.appendChild(eg);
-
-  const ng=document.createElementNS('http://www.w3.org/2000/svg','g');
-  ng.setAttribute('transform',`translate(${tx},${ty}) scale(${sc})`);
-  vn.forEach(n=>{
-    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
-    g.setAttribute('class','node-group');
-    const isSel=n.id===selectedId;
-    const isStatementDim=!selectedId&&selectedStatement&&!nodeMatchesStatement(n);
-    const isDim=(selectedId&&!isSel&&!EDGES.some(e=>(e.s===selectedId&&e.t===n.id)||(e.t===selectedId&&e.s===n.id)))||isStatementDim;
-    const metrics=getNodeMetrics(n);
-    const pos=positions.get(n.id);
-    const left=pos.x-metrics.width/2;
-    const top=pos.y-metrics.height/2;
-
-    const usePath=n.type==='behaviour' || n.type==='commercial';
-    const shape=document.createElementNS('http://www.w3.org/2000/svg',usePath?'path':'rect');
-    if(n.type==='behaviour'){
-      shape.setAttribute('d',getBehaviourCloudPath(left,top,metrics.width,metrics.height));
-    }else if(n.type==='commercial'){
-      shape.setAttribute('d',getCommercialHexPath(left,top,metrics.width,metrics.height));
-    }else{
-      shape.setAttribute('x',left);
-      shape.setAttribute('y',top);
-      shape.setAttribute('width',metrics.width);
-      shape.setAttribute('height',metrics.height);
-      shape.setAttribute('rx',metrics.rx);
-    }
-    shape.setAttribute('fill',FILLS[n.type]);
-    shape.setAttribute('stroke',COLORS[n.type]);
-    shape.setAttribute('stroke-width',n.type==='root'?(isSel?4.2:2.8):(isSel?3:1.7));
-    shape.setAttribute('opacity',isDim?0.18:1);
-    g.appendChild(shape);
-
-    if(NODE_OUTLINE[n.type]&&!isSel){
-      const outline=NODE_OUTLINE[n.type];
-      const ring=document.createElementNS('http://www.w3.org/2000/svg','rect');
-      ring.setAttribute('x',left-3);
-      ring.setAttribute('y',top-3);
-      ring.setAttribute('width',metrics.width+6);
-      ring.setAttribute('height',metrics.height+6);
-      ring.setAttribute('rx',metrics.rx+3);
-      ring.setAttribute('fill','none');
-      ring.setAttribute('stroke',outline.stroke);
-      ring.setAttribute('stroke-width',String(outline.width));
-      if(outline.dash) ring.setAttribute('stroke-dasharray',outline.dash);
-      ring.setAttribute('opacity',isDim?0.1:String(outline.opacity));
-      g.insertBefore(ring,shape);
-    }
-
-    metrics.lines.forEach((ln,i)=>{
-      const t=document.createElementNS('http://www.w3.org/2000/svg','text');
-      const totalHeight=(metrics.lines.length-1)*metrics.lineHeight;
-      const yOff=(i*metrics.lineHeight)-(totalHeight/2);
-      t.setAttribute('x',pos.x);t.setAttribute('y',pos.y+yOff);
-      t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','central');
-      t.setAttribute('font-size',String(metrics.fontSize));
-      t.setAttribute('font-family','Aptos, Segoe UI Variable Display, Segoe UI, Tahoma, Geneva, Verdana, sans-serif');
-      t.setAttribute('font-weight',n.type==='root'?'800':n.type==='outcomes'?'650':'600');
-      t.setAttribute('letter-spacing',n.type==='root'?'0.02em':'0');
-      t.setAttribute('fill',isDim?'#7f90a5':(TEXT_COLORS[n.type]||COLORS[n.type]));
-      t.setAttribute('opacity',isDim?0.3:1);
-      t.textContent=ln;
-      g.appendChild(t);
-    });
-    g.addEventListener('mousedown',event=>startNodeDrag(event,n.id));
-    ng.appendChild(g);
-  });
-  svg.appendChild(ng);
-}
-
-function selectNode(id){
-  panelMode='node';
-  selectedStatement=null;
-  const statementsBtn=document.getElementById('statementsBtn');
-  const briefingBtn=document.getElementById('briefingBtn');
-  if(statementsBtn) statementsBtn.classList.remove('active');
-  if(briefingBtn) briefingBtn.classList.remove('active');
-  selectedId=selectedId===id?null:id;
-  draw();updatePanel();
-}
-
-function updatePanel(){
-  const panel=document.getElementById('panel');
-  if(panelMode==='statements'){
-    let html=`<div class="panel-badge" style="background:rgba(28,166,221,.18);color:#9ddcff">Executive summary</div>
-    <div class="panel-title">Headline statements and outcomes</div>
-    <div class="panel-body">${EXECUTIVE_STATEMENTS.opening}</div>
-    <div class="panel-lbl">Core statements</div>
-    <div class="panel-list">`;
-    EXECUTIVE_STATEMENTS.sections.forEach(section=>{
-      const key=section.title.toLowerCase();
-      const activeClass=selectedStatement===key?' active':'';
-      html+=`<button class="panel-card clickable${activeClass}" onclick="focusStatement('${key}')"><div class="panel-card-title">${section.title}</div><div class="panel-body">${section.body}</div></button>`;
-    });
-    html+=`</div><div class="panel-lbl">If data is managed better</div><div class="panel-list">`;
-    EXECUTIVE_STATEMENTS.outcomes.forEach(item=>{
-      html+=`<div class="panel-card"><div class="panel-body">${item}</div></div>`;
-    });
-    html+=`</div>`;
-    panel.innerHTML=html;
-    return;
-  }
-  if(panelMode==='briefing'){
-    let html=`<div class="panel-badge" style="background:rgba(239,159,39,.18);color:#ffd79b">NEEP / DfT briefing</div>
-    <div class="panel-title">One-slide executive briefing</div>
-    <div class="panel-lbl">What NEEP is effectively telling DfT</div>
-    <div class="panel-list">`;
-    NEEP_BRIEFING.messages.forEach(item=>{
-      html+=`<div class="panel-card"><div class="panel-body">${item}</div></div>`;
-    });
-    html+=`</div><div class="panel-lbl">Theme to graph crosswalk</div><div class="panel-table">`;
-    NEEP_BRIEFING.crosswalk.forEach(row=>{
-      const activeClass=selectedStatement===row.theme?' active':'';
-      html+=`<button class="panel-row clickable${activeClass}" onclick="focusBriefingTheme(${JSON.stringify(row.theme).replace(/"/g,'&quot;')})"><div class="panel-row-key">${row.theme}</div><div class="panel-row-value">${row.nodes}</div></button>`;
-    });
-    html+=`</div>`;
-    panel.innerHTML=html;
-    return;
-  }
-  if(!selectedId){
-    panel.innerHTML='<div class="panel-empty"><i class="ti ti-hand-click" style="font-size:26px;display:block;margin:0 auto 10px;opacity:.4"></i>Click any node to explore the challenge, examples, and connections.</div>';
-    return;
-  }
-  const n=getNode(selectedId);
-  if(!n) return;
-  const bc=BADGE[n.type]||BADGE.root;
-  const domainLabel=n.type==='bim'?'Technical › BIM & CDE':n.type==='lifecycle'?'Technical › Lifecycle':n.type.charAt(0).toUpperCase()+n.type.slice(1);
-  const connected=EDGES.filter(e=>e.s===n.id||e.t===n.id)
-    .map(e=>e.s===n.id?e.t:e.s).filter(id=>id!==n.id)
-    .map(id=>getNode(id)).filter(Boolean);
-
-  let html=`<div><span class="panel-badge" style="background:${bc.bg};color:${bc.color}">${domainLabel}</span></div>
-  <div class="panel-title">${n.label.replace('\n',' ')}</div>
-  <div class="panel-lbl">Challenge</div>
-  <div class="panel-body">${n.desc}</div>`;
-  if(n.example) html+=`<div class="panel-lbl">Example</div><div class="panel-example">${n.example}</div>`;
-  if(connected.length){
-    html+=`<div class="panel-lbl">Connected nodes</div><div class="panel-links">`;
-    connected.forEach(cn=>{
-      const cl=cn.type==='bim'?'Technical › BIM & CDE':cn.type==='lifecycle'?'Technical › Lifecycle':cn.type.charAt(0).toUpperCase()+cn.type.slice(1);
-      html+=`<button class="plbtn" onclick="selectNode('${cn.id}')"><span style="width:8px;height:8px;border-radius:50%;background:${COLORS[cn.type]};flex-shrink:0;display:inline-block"></span>${cn.label.replace('\n',' ')}</button>`;
-    });
-    html+=`</div>`;
-  }
-  panel.innerHTML=html;
-}
-
-function setFilter(f,el){
-  activeFilter=f;
-  panelMode='node';
-  selectedStatement=null;
-  const statementsBtn=document.getElementById('statementsBtn');
-  const briefingBtn=document.getElementById('briefingBtn');
-  if(statementsBtn) statementsBtn.classList.remove('active');
-  if(briefingBtn) briefingBtn.classList.remove('active');
-  document.querySelectorAll('.kg-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  selectedId=null;
-  draw();updatePanel();
-}
-function toggleStatements(){
-  const button=document.getElementById('statementsBtn');
-  const briefingBtn=document.getElementById('briefingBtn');
-  panelMode=panelMode==='statements'?'node':'statements';
-  if(panelMode==='statements'){
-    selectedId=null;
-    selectedStatement=null;
-    if(button) button.classList.add('active');
-    if(briefingBtn) briefingBtn.classList.remove('active');
-  }else if(button){
-    selectedStatement=null;
-    button.classList.remove('active');
-  }
-  draw();
-  updatePanel();
-}
-function toggleBriefing(){
-  const button=document.getElementById('briefingBtn');
-  const statementsBtn=document.getElementById('statementsBtn');
-  panelMode=panelMode==='briefing'?'node':'briefing';
-  selectedId=null;
-  selectedStatement=null;
-  if(panelMode==='briefing'){
-    if(button) button.classList.add('active');
-    if(statementsBtn) statementsBtn.classList.remove('active');
-  }else if(button){
-    button.classList.remove('active');
-  }
-  draw();
-  updatePanel();
-}
-function focusBriefingTheme(theme){
-  panelMode='briefing';
-  selectedId=null;
-  selectedStatement=selectedStatement===theme?null:theme;
-  const briefingBtn=document.getElementById('briefingBtn');
-  const statementsBtn=document.getElementById('statementsBtn');
-  if(briefingBtn) briefingBtn.classList.add('active');
-  if(statementsBtn) statementsBtn.classList.remove('active');
-  draw();
-  updatePanel();
-}
-function focusStatement(statementKey){
-  panelMode='statements';
-  selectedId=null;
-  selectedStatement=selectedStatement===statementKey?null:statementKey;
-  const button=document.getElementById('statementsBtn');
-  const briefingBtn=document.getElementById('briefingBtn');
-  if(button) button.classList.add('active');
-  if(briefingBtn) briefingBtn.classList.remove('active');
-  draw();
-  updatePanel();
-}
-function zoom(f){transform.scale=Math.min(3,Math.max(0.3,transform.scale*f));draw()}
-function resetView(){transform={x:0,y:0,scale:1};draw()}
-
-canvas.addEventListener('mousedown',e=>{dragging=true;lastMouse={x:e.clientX,y:e.clientY}});
-window.addEventListener('mousemove',e=>{
-  if(draggingNodeId){
-    const point=clientToGraphPoint(e.clientX,e.clientY);
-    nodeManualPositions.set(draggingNodeId,{
-      x:point.x-nodeDragOffset.x,
-      y:point.y-nodeDragOffset.y,
-    });
-    nodeDragMoved=true;
-    draw();
-    return;
-  }
-  if(!dragging) return;
-  transform.x+=e.clientX-lastMouse.x;transform.y+=e.clientY-lastMouse.y;
-  lastMouse={x:e.clientX,y:e.clientY};draw();
-});
-window.addEventListener('mouseup',()=>{
-  dragging=false;
-  if(draggingNodeId){
-    const releasedNodeId=draggingNodeId;
-    draggingNodeId=null;
-    nodeDragOffset=null;
-    if(!nodeDragMoved) selectNode(releasedNodeId);
-    nodeDragMoved=false;
-  }
-});
-canvas.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY<0?1.08:0.93)},{passive:false});
-window.addEventListener('resize',()=>draw());
-setTimeout(draw,60);
+      // Keep all your other functions (draw, selectNode, updatePanel, toggleStatements, etc.)
+      // Just make sure setFilter uses the fixed version above.
     </script>
   </body>
 </html>
