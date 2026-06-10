@@ -96,6 +96,8 @@ svg#graph{width:100%;height:100%}
 .zoom-btns{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:6px}
 .zbtn{width:30px;height:30px;border:1px solid var(--kg-border-soft);border-radius:12px;background:rgba(13,23,48,.88);cursor:pointer;font-size:15px;color:var(--kg-text);display:flex;align-items:center;justify-content:center;transition:background .1s}
 .zbtn:hover{background:rgba(28,166,221,.14)}
+.canvas-logo{position:absolute;bottom:14px;right:14px;z-index:11;pointer-events:none}
+.canvas-logo img{height:80px;width:auto;display:block;opacity:.95}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
 </style>
 
@@ -115,9 +117,11 @@ svg#graph{width:100%;height:100%}
   <button class="kg-action" id="statementsBtn" onclick="toggleStatements()">Statements &amp; outcomes</button>
   <button class="kg-action" id="briefingBtn" onclick="toggleBriefing()">NEEP briefing</button>
   <button class="kg-action" id="dftBtn" onclick="toggleDftBriefing()">DfT Q&amp;A</button>
+  <button class="kg-action" id="orrBtn" onclick="toggleOrrCrosswalk()">ORR crosswalk</button>
 </div>
 <div class="kg-body">
 <div class="kg-canvas" id="canvas"><svg id="graph"></svg>
+  <div class="canvas-logo"><img src="./2DLogo_Trans.png" alt="2D Logo"></div>
   <div class="legend">
     <div class="lr"><span class="ld"><svg viewBox="0 0 24 16" aria-hidden="true"><path d="M5 13 C2.4 13,1.2 10.8,2.2 8.9 C1.2 6.5,3 4.1,5.7 4.4 C6.9 1.8,10.4 1.1,12.5 3 C15 1.4,18.6 2.4,19.3 5.2 C22.2 5.1,23.8 8.5,22.1 10.9 C22 12.8,20 14,17.8 13.6 C16.4 15.4,13.8 15.6,12 14.3 C10 15.4,7.3 14.8,5.9 13.2 Z" fill="#EEEDFE" stroke="#7F77DD" stroke-width="1.4"/></svg></span>Behaviours</div>
     <div class="lr"><span class="ld"><svg viewBox="0 0 24 16" aria-hidden="true"><path d="M5 2.2 L19 2.2 L23 8 L19 13.8 L5 13.8 L1 8 Z" fill="#F9E7EA" stroke="#C55367" stroke-width="1.4"/></svg></span>Commercial</div>
@@ -212,6 +216,18 @@ const DFT_BRIEFING={
     {question:'What would a low-regret first step look like for DfT?', response:'Choose one shared cross-project priority such as trusted handover criteria, standard task codes, a shared language model, or common asset-data requirements. Pilot it on live programmes and measure reduced rework, faster acceptance, and stronger operational usability.', nodes:'No standard task or work breakdown structure codes; No shared IM language or system dictionary; No standard information/data requirements; Optimised for handover; Cost & programme; Industry service reliability', nodeIds:['t9','t13','c12','lc3','o2','o7']},
     {question:'How should DfT think about BIM, digital twins, and AI in this discussion?', response:'As dependent on data foundations, not as the starting point. If DfT pushes tools without shared standards, usable handover data, or clear information requirements, cost will rise and trust will fall.', nodes:'Misunderstood BIM delivery; Common Data Environment centred on deliverables; Digital twins visualisation only; NR standards are not machine readable; Future AI readiness', nodeIds:['b14','bim4','bim6','t8','o9']},
     {question:'How can DfT be confident this will not create new delivery risk?', response:'Tie data reform directly to assurance and operational outcomes. Better provenance, clearer suitability, stronger handover criteria, and common standards reduce ambiguity and make decisions more defensible than today’s fragmented project-specific practices.', nodes:'Poor provenance; Data suitability categories; No common data standard; Poor visibility of incident root cause; Better decision quality', nodeIds:['t2','t11','t1','lc6','o8']}
+  ]
+};
+
+const ORR_CROSSWALK={
+  intro:'Crosswalk of ORR Safe AI Innovation Action Plan actions to the knowledge graph nodes. Select an action to highlight aligned nodes on the graph.',
+  actions:[
+    {action:'Action 1: Digital Safety Strategy and Strategic Risk Chapter', why:'Clarifies digital and AI safety expectations across existing duty-holder safety management frameworks.', nodes:'Approval fatigue; CRT seen as a tick-box requirement; Data suitability categories; Poor provenance; Poor visibility of incident root cause', nodeIds:['b5','b8','t11','t2','lc6'], kpi:'Percent of projects using explicit suitability and provenance controls in safety submissions'},
+    {action:'Action 2: Update ROGS and CSM-RA guidance for digital and AI', why:'Explains how existing legal duties apply to AI and digital technologies without introducing AI-specific regulation.', nodes:'Data suitability categories; Poor provenance; NR standards not machine readable; No standard information/data requirements; No shared IM language or system dictionary', nodeIds:['t11','t2','t8','c12','t13'], kpi:'Reduction in risk-assessment clarification loops and rework due to ambiguous data quality'},
+    {action:'Action 3: Explore AI use in interoperability authorisation', why:'Tests whether approvals and authorisations remain compatible with AI-enabled products and evidence.', nodes:'No common data standard; No shared IM language or system dictionary; NR standards not machine readable; Data not API accessible; No standard information/data requirements', nodeIds:['t1','t13','t8','t10','c12'], kpi:'Median decision time for digitally enabled authorisation cases'},
+    {action:'Action 4: AI-enabled monitoring and passenger-focused analysis', why:'Improves regulatory monitoring by extracting deeper insight from complaints, assistance, and related datasets.', nodes:'Better decision quality; Data not API accessible; Dashboard theatre; Poor provenance; Data suitability categories', nodeIds:['o8','t10','b12','t2','t11'], kpi:'Number of validated regulatory insights identified through AI-assisted analysis'},
+    {action:'Action 5: Consider anonymised/synthetic data availability', why:'Assesses demand, barriers, and safe routes for wider reuse of data to support innovation.', nodes:'Data hoarding; Risk-averse sharing; IP and ownership; Procurement barriers; Open Rail Data Marketplace; Centrally hosted Health and Safety data for industry sharing', nodeIds:['b1','b3','c1','c2','o4','t12'], kpi:'Number of machine-readable datasets published plus reuse and access volume'},
+    {action:'Action 6: Explore innovative methods including sandboxes', why:'Identifies where new engagement methods can reduce uncertainty and support safe innovation at scale.', nodes:'Innovation progression; SME exclusion; Innovation-first thinking; Data capability not embedded in project delivery; No national IM framework', nodeIds:['c6','c7','b11','c11','c13'], kpi:'Number of sandbox-style or pilot engagements completed with published assurance outcomes'}
   ]
 };
 
@@ -752,6 +768,9 @@ function getSelectedCrosswalk(){
 function getSelectedDftQuestion(){
   return DFT_BRIEFING.questions.find(row=>row.question===selectedStatement)||null;
 }
+function getSelectedOrrAction(){
+  return ORR_CROSSWALK.actions.find(row=>row.action===selectedStatement)||null;
+}
 
 function nodeMatchesStatement(node){
   if(!selectedStatement) return true;
@@ -763,6 +782,8 @@ function nodeMatchesStatement(node){
   if(selectedCrosswalk) return selectedCrosswalk.nodeIds.includes(node.id);
   const selectedQuestion=getSelectedDftQuestion();
   if(selectedQuestion) return selectedQuestion.nodeIds.includes(node.id);
+  const selectedOrrAction=getSelectedOrrAction();
+  if(selectedOrrAction) return selectedOrrAction.nodeIds.includes(node.id);
   return true;
 }
 
@@ -882,9 +903,11 @@ function selectNode(id){
   const statementsBtn=document.getElementById('statementsBtn');
   const briefingBtn=document.getElementById('briefingBtn');
   const dftBtn=document.getElementById('dftBtn');
+  const orrBtn=document.getElementById('orrBtn');
   if(statementsBtn) statementsBtn.classList.remove('active');
   if(briefingBtn) briefingBtn.classList.remove('active');
   if(dftBtn) dftBtn.classList.remove('active');
+  if(orrBtn) orrBtn.classList.remove('active');
   selectedId=selectedId===id?null:id;
   draw();updatePanel();
 }
@@ -944,6 +967,20 @@ function updatePanel(){
     panel.innerHTML=html;
     return;
   }
+  if(panelMode==='orr'){
+    let html=`<div class="panel-badge" style="background:rgba(28,166,221,.18);color:#bfe7ff">ORR alignment</div>
+    <div class="panel-title">ORR AI Action Plan crosswalk</div>
+    <div class="panel-body">${ORR_CROSSWALK.intro}</div>
+    <div class="panel-lbl">Action to graph crosswalk</div>
+    <div class="panel-table">`;
+    ORR_CROSSWALK.actions.forEach(row=>{
+      const activeClass=selectedStatement===row.action?' active':'';
+      html+=`<button class="panel-row clickable${activeClass}" onclick="focusOrrAction(${JSON.stringify(row.action).replace(/"/g,'&quot;')})"><div class="panel-row-key">${row.action}</div><div class="panel-row-value"><strong>Alignment:</strong> ${row.nodes}<br><br><strong>Intent:</strong> ${row.why}<br><br><strong>Suggested KPI:</strong> ${row.kpi}</div></button>`;
+    });
+    html+=`</div>`;
+    panel.innerHTML=html;
+    return;
+  }
   if(!selectedId){
     panel.innerHTML='<div class="panel-empty"><i class="ti ti-hand-click" style="font-size:26px;display:block;margin:0 auto 10px;opacity:.4"></i>Click any node to explore the challenge, examples, and connections.</div>';
     return;
@@ -979,9 +1016,11 @@ function setFilter(f,el){
   const statementsBtn=document.getElementById('statementsBtn');
   const briefingBtn=document.getElementById('briefingBtn');
   const dftBtn=document.getElementById('dftBtn');
+  const orrBtn=document.getElementById('orrBtn');
   if(statementsBtn) statementsBtn.classList.remove('active');
   if(briefingBtn) briefingBtn.classList.remove('active');
   if(dftBtn) dftBtn.classList.remove('active');
+  if(orrBtn) orrBtn.classList.remove('active');
   document.querySelectorAll('.kg-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   selectedId=null;
@@ -991,6 +1030,7 @@ function toggleStatements(){
   const button=document.getElementById('statementsBtn');
   const briefingBtn=document.getElementById('briefingBtn');
   const dftBtn=document.getElementById('dftBtn');
+  const orrBtn=document.getElementById('orrBtn');
   panelMode=panelMode==='statements'?'node':'statements';
   if(panelMode==='statements'){
     selectedId=null;
@@ -998,6 +1038,7 @@ function toggleStatements(){
     if(button) button.classList.add('active');
     if(briefingBtn) briefingBtn.classList.remove('active');
     if(dftBtn) dftBtn.classList.remove('active');
+    if(orrBtn) orrBtn.classList.remove('active');
   }else if(button){
     selectedStatement=null;
     button.classList.remove('active');
@@ -1009,6 +1050,7 @@ function toggleBriefing(){
   const button=document.getElementById('briefingBtn');
   const statementsBtn=document.getElementById('statementsBtn');
   const dftBtn=document.getElementById('dftBtn');
+  const orrBtn=document.getElementById('orrBtn');
   panelMode=panelMode==='briefing'?'node':'briefing';
   selectedId=null;
   selectedStatement=null;
@@ -1016,6 +1058,7 @@ function toggleBriefing(){
     if(button) button.classList.add('active');
     if(statementsBtn) statementsBtn.classList.remove('active');
     if(dftBtn) dftBtn.classList.remove('active');
+    if(orrBtn) orrBtn.classList.remove('active');
   }else if(button){
     button.classList.remove('active');
   }
@@ -1026,6 +1069,7 @@ function toggleDftBriefing(){
   const button=document.getElementById('dftBtn');
   const statementsBtn=document.getElementById('statementsBtn');
   const briefingBtn=document.getElementById('briefingBtn');
+  const orrBtn=document.getElementById('orrBtn');
   panelMode=panelMode==='dft'?'node':'dft';
   selectedId=null;
   selectedStatement=null;
@@ -1033,6 +1077,26 @@ function toggleDftBriefing(){
     if(button) button.classList.add('active');
     if(statementsBtn) statementsBtn.classList.remove('active');
     if(briefingBtn) briefingBtn.classList.remove('active');
+    if(orrBtn) orrBtn.classList.remove('active');
+  }else if(button){
+    button.classList.remove('active');
+  }
+  draw();
+  updatePanel();
+}
+function toggleOrrCrosswalk(){
+  const button=document.getElementById('orrBtn');
+  const statementsBtn=document.getElementById('statementsBtn');
+  const briefingBtn=document.getElementById('briefingBtn');
+  const dftBtn=document.getElementById('dftBtn');
+  panelMode=panelMode==='orr'?'node':'orr';
+  selectedId=null;
+  selectedStatement=null;
+  if(panelMode==='orr'){
+    if(button) button.classList.add('active');
+    if(statementsBtn) statementsBtn.classList.remove('active');
+    if(briefingBtn) briefingBtn.classList.remove('active');
+    if(dftBtn) dftBtn.classList.remove('active');
   }else if(button){
     button.classList.remove('active');
   }
@@ -1046,9 +1110,11 @@ function focusBriefingTheme(theme){
   const briefingBtn=document.getElementById('briefingBtn');
   const statementsBtn=document.getElementById('statementsBtn');
   const dftBtn=document.getElementById('dftBtn');
+  const orrBtn=document.getElementById('orrBtn');
   if(briefingBtn) briefingBtn.classList.add('active');
   if(statementsBtn) statementsBtn.classList.remove('active');
   if(dftBtn) dftBtn.classList.remove('active');
+  if(orrBtn) orrBtn.classList.remove('active');
   draw();
   updatePanel();
 }
@@ -1059,9 +1125,11 @@ function focusStatement(statementKey){
   const button=document.getElementById('statementsBtn');
   const briefingBtn=document.getElementById('briefingBtn');
   const dftBtn=document.getElementById('dftBtn');
+  const orrBtn=document.getElementById('orrBtn');
   if(button) button.classList.add('active');
   if(briefingBtn) briefingBtn.classList.remove('active');
   if(dftBtn) dftBtn.classList.remove('active');
+  if(orrBtn) orrBtn.classList.remove('active');
   draw();
   updatePanel();
 }
@@ -1072,9 +1140,26 @@ function focusDftQuestion(question){
   const button=document.getElementById('dftBtn');
   const statementsBtn=document.getElementById('statementsBtn');
   const briefingBtn=document.getElementById('briefingBtn');
+  const orrBtn=document.getElementById('orrBtn');
   if(button) button.classList.add('active');
   if(statementsBtn) statementsBtn.classList.remove('active');
   if(briefingBtn) briefingBtn.classList.remove('active');
+  if(orrBtn) orrBtn.classList.remove('active');
+  draw();
+  updatePanel();
+}
+function focusOrrAction(action){
+  panelMode='orr';
+  selectedId=null;
+  selectedStatement=selectedStatement===action?null:action;
+  const button=document.getElementById('orrBtn');
+  const statementsBtn=document.getElementById('statementsBtn');
+  const briefingBtn=document.getElementById('briefingBtn');
+  const dftBtn=document.getElementById('dftBtn');
+  if(button) button.classList.add('active');
+  if(statementsBtn) statementsBtn.classList.remove('active');
+  if(briefingBtn) briefingBtn.classList.remove('active');
+  if(dftBtn) dftBtn.classList.remove('active');
   draw();
   updatePanel();
 }
