@@ -32,8 +32,6 @@ body{
   flex-direction:column;
   min-height:calc(100vh - 48px);
   min-height:calc(100dvh - 48px);
-  height:calc(100vh - 48px);
-  height:calc(100dvh - 48px);
   width:min(100%,1400px);
   margin:0 auto;
   color:var(--kg-text);
@@ -61,6 +59,10 @@ body{
 .kg-action{margin-left:auto;padding:6px 12px;border-radius:999px;font-size:12px;cursor:pointer;border:1px solid var(--kg-border-soft);background:rgba(21,36,64,.72);color:var(--kg-text);transition:all .15s;font-weight:600}
 .kg-action:hover,.kg-action.active{background:linear-gradient(90deg,var(--kg-accent),var(--kg-accent-strong));color:#041321;border-color:transparent;box-shadow:0 8px 22px rgba(28,166,221,.28)}
 .kg-body{display:flex;flex:1;min-height:0}
+.kg-footer{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 18px;border-top:1px solid var(--kg-border-soft);background:rgba(7,15,31,.92);font-size:12px;color:var(--kg-text-muted);flex-wrap:wrap}
+.kg-footer a{color:var(--kg-text);text-decoration:none}
+.kg-footer a:hover{color:#9ddcff;text-decoration:underline}
+.kg-footer-meta{display:flex;gap:16px;flex-wrap:wrap}
 .kg-canvas{flex:1;min-height:0;position:relative;overflow:hidden;cursor:grab;background:transparent}
 .kg-canvas:active{cursor:grabbing}
 .kg-panel{width:320px;min-height:0;border-left:1px solid var(--kg-border-soft);padding:18px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,rgba(13,23,48,.94),rgba(7,15,31,.96))}
@@ -141,6 +143,14 @@ svg#graph{width:100%;height:100%}
   <div class="panel-empty"><i class="ti ti-hand-click" style="font-size:26px;display:block;margin:0 auto 10px;opacity:.4"></i>Click any node to explore the challenge, examples, and connections.</div>
 </div>
 </div>
+<footer class="kg-footer">
+  <div class="kg-footer-meta">
+    <span>Published: 6 July 2026</span>
+    <span>Contact: <a href="mailto:paulrowlands@digitalitysolutions.co.uk">paulrowlands@digitalitysolutions.co.uk</a></span>
+    <span>Website: <a href="https://www.digitalitysolutions.co.uk" target="_blank" rel="noopener noreferrer">www.digitalitysolutions.co.uk</a></span>
+  </div>
+  <div>&copy; 2026 Digitality Solutions. All rights reserved.</div>
+</footer>
 </div>
 
 <script>
